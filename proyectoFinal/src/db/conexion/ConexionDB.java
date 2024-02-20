@@ -1,22 +1,35 @@
 package db.conexion;
 
 import java.sql.Connection;
+import java.sql.DriverManager;
 
 public class ConexionDB {
     private Connection conexion;
-    private String user;
-    private String pass;
-    private String db;
-    private int port;
-    private String url;
+    private String user = "root";
+    private String pass = "root";
+    private String db = "empleados";
+    private int port = 3306;
+    private String url = "jdbc:mysql://localhost:" + port + "/" + db;
     private ConexionDB() {
        
     }
     public Connection getConexion() {
-        return conexion;
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            conexion = DriverManager.getConnection(url, user, pass);
+            return conexion;
+        } catch (Exception ex) {
+            System.out.println("Error al conectar la base de datos");
+        }
+        return null;
     }
     public void setConexion(Connection conexion) {
-        this.conexion = conexion;
+        try {
+            if (conexion == null || conexion.isClosed()) return;
+            conexion.close();
+        } catch (Exception e) {
+            System.out.println("Error al cerrar la conexión");
+        }
     }
     public String getUser() {
         return user;
