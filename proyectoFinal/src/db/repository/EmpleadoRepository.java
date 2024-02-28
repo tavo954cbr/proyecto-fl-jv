@@ -73,7 +73,7 @@ public class EmpleadoRepository implements RepositoryInterfaces<Empleado>{
         String telefono = null;
         String email = null;
         Date fecha_nacimiento = null;
-        Genero genero = null;
+        Genero genero = generoRepository.dameListaGeneros(id_genero);
         try {
             while (resultSet.next()) {
                 id = resultSet.getLong("id_empleados");
@@ -82,7 +82,7 @@ public class EmpleadoRepository implements RepositoryInterfaces<Empleado>{
                 telefono = resultSet.getString("telefono");
                 email = resultSet.getString("email");
                 fecha_nacimiento = resultSet.getDate("fecha_nacimiento");
-                genero = genero
+                genero = generoRepository(resultSet.getLong("id_genero"));
                 empleados.add(new Empleado(id, nombre, nombre, nombre, nombre, null, null));
             }
                 return empleados;
