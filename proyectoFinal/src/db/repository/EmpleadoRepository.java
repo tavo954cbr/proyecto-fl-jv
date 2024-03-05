@@ -12,6 +12,7 @@ import db.conexion.ConexionDB;
 import interfaces.RepositoryInterfaces;
 import models.Empleado;
 import models.Genero;
+import db.repository.GeneroRepository;
 
 public class EmpleadoRepository implements RepositoryInterfaces<Empleado>{
 
@@ -67,26 +68,21 @@ public class EmpleadoRepository implements RepositoryInterfaces<Empleado>{
 
     private List<Empleado> dameListaEmpleados(ResultSet resultSet) {
         List<Empleado> empleados = new ArrayList<Empleado>();
-        Long id = null;
-        String nombre = null;
-        String domicilio = null;
-        String telefono = null;
-        String email = null;
-        Date fecha_nacimiento = null;
-        Genero genero = generoRepository.dameListaGeneros(id_genero);
+        GeneroRepository generoRepository = new GeneroRepository();
         try {
             while (resultSet.next()) {
-                id = resultSet.getLong("id_empleados");
-                nombre = resultSet.getString("nombre");
-                domicilio = resultSet.getString("domicilio");
-                telefono = resultSet.getString("telefono");
-                email = resultSet.getString("email");
-                fecha_nacimiento = resultSet.getDate("fecha_nacimiento");
-                genero = generoRepository(resultSet.getLong("id_genero"));
-                empleados.add(new Empleado(id, nombre, nombre, nombre, nombre, null, null));
+                Long id = resultSet.getLong("id_empleados");
+                String nombre = resultSet.getString("nombre");
+                String domicilio = resultSet.getString("domicilio");
+                String telefono = resultSet.getString("telefono");
+                String email = resultSet.getString("email");
+                Date fecha_nacimiento = resultSet.getDate("fecha_nacimiento");
+                Genero genero = generoRepository.recuperarId(resultSet.getLong("id_generos"));
+                empleados.add(new Empleado(id, nombre, domicilio, telefono, email, fecha_nacimiento, genero));
             }
                 return empleados;
         } catch (Exception e) {
+            e.printStackTrace();
             System.out.println("Error en la consulta: "+e.getMessage());
         }
         return null;
@@ -94,20 +90,51 @@ public class EmpleadoRepository implements RepositoryInterfaces<Empleado>{
 
     @Override
     public void agregar(Empleado entidad) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'agregar'");
+        try (Connection connection = ConexionDB.getConexion()) {
+            String q= "INSERT INTO empleados VALUES = (null,?,?,?,?,?,null)";
+            try (PreparedStatement preparedStatement = connection.prepareStatement(q)) {
+                preparedStatement.setString(1, q);
+                preparedStatement.executeUpdate();
+            } catch (Exception e) {
+                System.out.println("Error en la consulta: "+e.getMessage());
+            }
+        } catch (Exception e) {
+            System.out.println("Error en la consulta: "+e.getMessage());
+        }
     }
 
     @Override
     public void modificar(Empleado entidad) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'modificar'");
+        try (Connection connection = ConexionDB.getConexion()) {
+            String q = "UPDATE empleados SET nombre,domicilio,telefono,email,fecha_nacimientio,id_generos=? WHERE id_empleados = ?";
+            try (PreparedStatement preparedStatement = connection.prepareStatement(q)) {
+                preparedStatement.setString(1, entidad.getNombre());
+                preparedStatement.setString(2, entidad.getDomicilio());
+                preparedStatement.setString(3, entidad.getTelefono());
+                preparedStatement.setDate(4, entidad.getFechaNacimiento());
+                preparedStatement.setLong(5, entidad.getId());
+                preparedStatement.executeUpdate();
+                
+            } catch (Exception e) {
+                System.out.println("Error en la consulta: "+e.getMessage());
+            }
+        } catch (Exception e) {
+            System.out.println("Error en la consulta: "+e.getMessage());
+        }
     }
 
     @Override
     public void eliminar(Empleado entidad) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'eliminar'");
+        try (Connection connection = ConexionDB.getConexion()) {
+            String q = "DELETE FROM empleados WHERE id_empleados = ?";
+            try (PreparedStatement preparedStatement = connection.prepareStatement(q)) {
+                preparedStatement.setLong(1, entidad.getId());
+            } catch (Exception e) {
+                System.out.println("Error en la consulta: "+e.getMessage());
+            }
+        } catch (Exception e) {
+            System.out.println("Error en la consulta: "+e.getMessage());
+        }
     }
 
 

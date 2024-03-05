@@ -1,13 +1,20 @@
 
 
+import java.util.List;
+
+import db.repository.EmpleadoRepository;
 import db.repository.GeneroRepository;
+import models.Empleado;
 import models.Genero;
 
 public class App {
     public static void main(String[] args) throws Exception {
-        GeneroRepository generoRepository = new GeneroRepository();
-        Genero g = generoRepository.recuperarId(1L);
-        System.out.println(g.getNombre());
+       EmpleadoRepository empleadoRepository = new EmpleadoRepository();
+       List<Empleado> lista = empleadoRepository.recuperarTodos();
+       for (Empleado empleado : lista) {
+        
+           System.out.println(empleado);
+       }
         
 
     }

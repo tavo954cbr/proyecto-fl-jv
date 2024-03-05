@@ -7,7 +7,6 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.mysql.cj.xdevapi.PreparableStatement;
 
 import db.conexion.ConexionDB;
 import interfaces.RepositoryInterfaces;
@@ -41,7 +40,6 @@ public class GeneroRepository implements RepositoryInterfaces<Genero> {
                 nombre = resultSet.getString("nombre");
                 return new Genero(idR, nombre);
             }
-            ;
             return null;
         } catch (Exception e) {
             System.out.println("Error en el resultSet: " + e.getMessage());
@@ -107,7 +105,7 @@ public class GeneroRepository implements RepositoryInterfaces<Genero> {
     @Override
     public void modificar(Genero entidad) {
         try (Connection connection = ConexionDB.getConexion()) {
-            String q = "UPDATE genero SET nombre = ? WHERE id=?";
+            String q = "UPDATE generos SET nombre = ? WHERE id_generos=?";
             try (PreparedStatement preparedStatement = connection.prepareStatement(q)) {
                 preparedStatement.setString(1, entidad.getNombre());
                 preparedStatement.setLong(2, entidad.getId());

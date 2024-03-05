@@ -62,4 +62,9 @@ public class Empleado {
     public void setGenero(Genero genero) {
         this.genero = genero;
     }
+    @Override
+    public String toString() {
+        return "Empleado [id=" + id + ", nombre=" + nombre + ", domicilio=" + domicilio + ", telefono=" + telefono
+                + ", email=" + email + ", fechaNacimiento=" + fechaNacimiento + ", genero=" + genero + "]";
+    }
 }
