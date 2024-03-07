@@ -15,6 +15,7 @@ import models.Genero;
 import db.repository.GeneroRepository;
 
 public class EmpleadoRepository implements RepositoryInterfaces<Empleado>{
+    GeneroRepository generoRepository = new GeneroRepository();
 
     @Override
     public Empleado recuperarId(Long id) {
@@ -39,14 +40,27 @@ public class EmpleadoRepository implements RepositoryInterfaces<Empleado>{
         String telefono = null;
         String email = null;
         Date fecha_nacimiento = null;
+        Long generoId = null;
         Genero genero = null;
         try {
             if (resultSet.next()) {
                 idR = resultSet.getLong("id_empleados");
                 nombre = resultSet.getString("nombre");
-                return new Empleado(idR, nombre, domicilio, telefono, email, fecha_nacimiento, genero);
+                domicilio = resultSet.getString("domicilio");
+                telefono = resultSet.getString("telefono");
+                email = resultSet.getString("email");
+                fecha_nacimiento = resultSet.getDate("fecha_nacimiento");
+                generoId = resultSet.getLong("id_generos");
+                genero = generoRepository.recuperarId(generoId);
+
+                return new Empleado(idR, 
+                nombre, 
+                domicilio, 
+                telefono, 
+                email, 
+                fecha_nacimiento, 
+                genero);
             }
-            ;
             return null;
         } catch (Exception e) {
             System.out.println("Error en el resultSet: " + e.getMessage());
@@ -70,6 +84,8 @@ public class EmpleadoRepository implements RepositoryInterfaces<Empleado>{
         List<Empleado> empleados = new ArrayList<Empleado>();
         GeneroRepository generoRepository = new GeneroRepository();
         try {
+            Long generoid = null;
+            Genero genero = null;
             while (resultSet.next()) {
                 Long id = resultSet.getLong("id_empleados");
                 String nombre = resultSet.getString("nombre");
@@ -77,7 +93,8 @@ public class EmpleadoRepository implements RepositoryInterfaces<Empleado>{
                 String telefono = resultSet.getString("telefono");
                 String email = resultSet.getString("email");
                 Date fecha_nacimiento = resultSet.getDate("fecha_nacimiento");
-                Genero genero = generoRepository.recuperarId(resultSet.getLong("id_generos"));
+                generoid = resultSet.getLong("id_generos");
+                genero = generoRepository.recuperarId(generoid);
                 empleados.add(new Empleado(id, nombre, domicilio, telefono, email, fecha_nacimiento, genero));
             }
                 return empleados;
@@ -91,10 +108,15 @@ public class EmpleadoRepository implements RepositoryInterfaces<Empleado>{
     @Override
     public void agregar(Empleado entidad) {
         try (Connection connection = ConexionDB.getConexion()) {
-            String q= "INSERT INTO empleados VALUES = (null,?,?,?,?,?,null)";
+            String q= "INSERT INTO empleados VALUES  (null,?,?,?,?,?,?)";
             try (PreparedStatement preparedStatement = connection.prepareStatement(q)) {
-                preparedStatement.setString(1, q);
-                preparedStatement.executeUpdate();
+                preparedStatement.setString(1, entidad.getNombre());
+                preparedStatement.setString(2, entidad.getDomicilio());
+                preparedStatement.setString(3, entidad.getTelefono());
+                preparedStatement.setString(4, entidad.getEmail());
+                preparedStatement.setDate(5, entidad.getFechaNacimiento());
+                preparedStatement.setLong(6, entidad.getGenero().getId());
+                preparedStatement.execute();
             } catch (Exception e) {
                 System.out.println("Error en la consulta: "+e.getMessage());
             }
@@ -106,13 +128,15 @@ public class EmpleadoRepository implements RepositoryInterfaces<Empleado>{
     @Override
     public void modificar(Empleado entidad) {
         try (Connection connection = ConexionDB.getConexion()) {
-            String q = "UPDATE empleados SET nombre,domicilio,telefono,email,fecha_nacimientio,id_generos=? WHERE id_empleados = ?";
+            String q = "UPDATE empleados SET nombre=?,domicilio=?,telefono=?,email=?,fecha_nacimiento=?,id_generos=? WHERE id_empleados = ?";
             try (PreparedStatement preparedStatement = connection.prepareStatement(q)) {
                 preparedStatement.setString(1, entidad.getNombre());
                 preparedStatement.setString(2, entidad.getDomicilio());
                 preparedStatement.setString(3, entidad.getTelefono());
-                preparedStatement.setDate(4, entidad.getFechaNacimiento());
-                preparedStatement.setLong(5, entidad.getId());
+                preparedStatement.setString(4, entidad.getEmail());
+                preparedStatement.setDate(5, entidad.getFechaNacimiento());
+                preparedStatement.setLong(6, entidad.getGenero().getId());
+                preparedStatement.setLong(7, entidad.getId());
                 preparedStatement.executeUpdate();
                 
             } catch (Exception e) {
@@ -129,6 +153,7 @@ public class EmpleadoRepository implements RepositoryInterfaces<Empleado>{
             String q = "DELETE FROM empleados WHERE id_empleados = ?";
             try (PreparedStatement preparedStatement = connection.prepareStatement(q)) {
                 preparedStatement.setLong(1, entidad.getId());
+                preparedStatement.executeUpdate();
             } catch (Exception e) {
                 System.out.println("Error en la consulta: "+e.getMessage());
             }

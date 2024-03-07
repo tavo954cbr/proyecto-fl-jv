@@ -54,7 +54,7 @@ public class GeneroRepository implements RepositoryInterfaces<Genero> {
         try (Connection connection = ConexionDB.getConexion()) {
             //creamos el query
             String q = "SELECT * FROM generos";
-            //No se necesita preparar por lo que usamos Statement
+            //No se necesita preparar por lo que usamos Statement   
             Statement statement  = connection.createStatement();
             // ejecutamos y recuperamos recordSet, en java resultSet
             return dameListaGeneros(statement.executeQuery(q));            
@@ -124,7 +124,7 @@ public class GeneroRepository implements RepositoryInterfaces<Genero> {
     @Override
     public void eliminar(Genero entidad) {
         try (Connection connection = ConexionDB.getConexion()) {
-            String q = "DELETE FROM generos WHERE id = ?";
+            String q = "DELETE FROM generos WHERE id_generos = ?";
             try (PreparedStatement preparedStatement = connection.prepareStatement(q)) {
                 preparedStatement.setLong(1, entidad.getId());
                 preparedStatement.executeUpdate();

@@ -53,8 +53,8 @@ public class Empleado {
     public Date getFechaNacimiento() {
         return fechaNacimiento;
     }
-    public void setFechaNacimiento(Date fechaNacimiento) {
-        this.fechaNacimiento = fechaNacimiento;
+    public void setFechaNacimiento(Date fecha_nacimiento) {
+        this.fechaNacimiento = fecha_nacimiento;
     }
     public Genero getGenero() {
         return genero;
@@ -65,6 +65,6 @@ public class Empleado {
     @Override
     public String toString() {
         return "Empleado [id=" + id + ", nombre=" + nombre + ", domicilio=" + domicilio + ", telefono=" + telefono
-                + ", email=" + email + ", fechaNacimiento=" + fechaNacimiento + ", genero=" + genero + "]";
+                + ", email=" + email + ", fecha_nacimiento=" + fechaNacimiento + ", genero=" + genero + "]";
     }
 }

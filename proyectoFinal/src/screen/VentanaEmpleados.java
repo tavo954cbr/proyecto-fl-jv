@@ -27,8 +27,7 @@ import models.Genero;
 public class VentanaEmpleados extends JFrame implements ActionListener {
     GeneroRepository generoRepository = new GeneroRepository();
     EmpleadoRepository empleadoRepository = new EmpleadoRepository();
-    Empleado empleado = new Empleado(null, getName(), getTitle(), getWarningString(), getName(), null, null);
-
+    Empleado empleado; 
     JLabel textLabel;
     JLabel numeroEmpleadoJLabel;
     JLabel nombreJLabel;
@@ -43,7 +42,7 @@ public class VentanaEmpleados extends JFrame implements ActionListener {
     JTextField telefonoJTextField;
     JTextField emailJTextField;
     JDateChooser fehcaJDateChooser;
-    JComboBox<String> generoJComboBox;
+    JComboBox<Genero> generoJComboBox;
     JButton buscarJButton;
     JButton guardarJButton;
     JButton modificarJButton;
@@ -57,32 +56,32 @@ public class VentanaEmpleados extends JFrame implements ActionListener {
         setLocationRelativeTo(null);
         setLayout(new GridBagLayout());
         crearComponentes();
-        // llenarComboBox();
+        llenarComboBox();
 
     }
 
     private void crearComponentes() {
-        JLabel textLabel = new JLabel("Empleados");
+        textLabel = new JLabel("Empleados");
         textLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        JLabel numeroEmpleadoJLabel = new JLabel("# Empleado");
-        JComboBox<Long> numeroEmpleadoJComboBox = new JComboBox<Long>();
-        JButton buscarJButton = new JButton("Buscar");
-        JLabel nombreJLabel = new JLabel("Nombre: ");
-        JTextField nombreJTextField = new JTextField(100);
-        JLabel domicilioJLabel = new JLabel("Domicilio: ");
-        JTextField domicilioJTextField = new JTextField(100);
-        JLabel telefonoJLabel = new JLabel("Telefono: ");
-        JTextField telefonoJTextField = new JTextField(15);
-        JLabel emailJLabel = new JLabel("Email: ");
-        JTextField emailJTextField = new JTextField(100);
-        JLabel fechaJLabel = new JLabel("Fecha: ");
-        JDateChooser fehcaJDateChooser = new JDateChooser();
-        JLabel generoJLabel = new JLabel("Género: ");
-        JComboBox<String> generoJComboBox = new JComboBox<String>();
-        JButton guardarJButton = new JButton("Guardar");
-        JButton modificarJButton = new JButton("Modificar");
-        JButton eliminarJButton = new JButton("Eliminar");
-        JButton limpiarJButton = new JButton("Limpiar");
+        numeroEmpleadoJLabel = new JLabel("# Empleado");
+        numeroEmpleadoJComboBox = new JComboBox<Long>();
+        buscarJButton = new JButton("Buscar");
+        nombreJLabel = new JLabel("Nombre: ");
+        nombreJTextField = new JTextField(100);
+        domicilioJLabel = new JLabel("Domicilio: ");
+        domicilioJTextField = new JTextField(100);
+        telefonoJLabel = new JLabel("Telefono: ");
+        telefonoJTextField = new JTextField(15);
+        emailJLabel = new JLabel("Email: ");
+        emailJTextField = new JTextField(100);
+        fechaJLabel = new JLabel("Fecha: ");
+        fehcaJDateChooser = new JDateChooser();
+        generoJLabel = new JLabel("Género: ");
+        generoJComboBox = new JComboBox<Genero>();
+        guardarJButton = new JButton("Guardar");
+        modificarJButton = new JButton("Modificar");
+        eliminarJButton = new JButton("Eliminar");
+        limpiarJButton = new JButton("Limpiar");
 
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(10, 10, 10, 10);
@@ -196,50 +195,73 @@ public class VentanaEmpleados extends JFrame implements ActionListener {
         }
         if (e.getSource() == guardarJButton) {
             System.out.println("Guardar...");
-            if (empleado != null) {
-                
-            }
+            guardarEmpleado();
 
         }
         if (e.getSource() == modificarJButton) {
             System.out.println("modificar...");
-           
+            modificarEmpleado();
 
         }
         if (e.getSource() == eliminarJButton) {
             System.out.println("Eliminar...");
-
+            eliminarEmpleado();
         }
         if (e.getSource() == limpiarJButton) {
             System.out.println("Limpiar...");
+            limpiarCampos();
+            actualizarCombobox();
         }
     }
 
 
     private void recuperarEmpleado(){
-        if (numeroEmpleadoJComboBox.getSelectedItem().equals("")) {
-                JOptionPane.showConfirmDialog(null, "Todos los datos son requeridos", "Confirmación", ABORT);
-            empleado = empleadoRepository.recuperarId(Long.parseLong(numeroEmpleadoJComboBox.getSelectedItem().toString()));
-            nombreJTextField.setText(empleado.getNombre());
-            domicilioJTextField.setText(empleado.getDomicilio());
-            telefonoJTextField.setText(empleado.getTelefono());
-            emailJTextField.setText(empleado.getEmail());
-            fehcaJDateChooser.setDate(empleado.getFechaNacimiento());
-            generoJComboBox.setSelectedIndex(empleado.getGenero().getId().intValue()-1);
+        empleado = empleadoRepository.recuperarId((long)(numeroEmpleadoJComboBox.getSelectedItem()));
+        nombreJTextField.setText(empleado.getNombre());
+        domicilioJTextField.setText(empleado.getDomicilio());
+        telefonoJTextField.setText(empleado.getTelefono());
+        emailJTextField.setText(empleado.getEmail());
+        fehcaJDateChooser.setDate(empleado.getFechaNacimiento());
+        generoJComboBox.setSelectedIndex(compararGenero(empleado.getGenero()));
         }
-    }
+    
+
+        private int compararGenero(Genero genero) {
+       
+            for (int i = 0; i < generoJComboBox.getItemCount(); i++) {
+                if(genero.getNombre().equals( generoJComboBox.getItemAt(i).getNombre())){
+                    return i;
+                }
+            }
+            return -1;
+        }
 
     private void guardarEmpleado(){
-        empleado = dameEmpleado();
+        java.util.Date utilDate = fehcaJDateChooser.getDate();
+        java.sql.Date fecha = new java.sql.Date(utilDate.getTime());
+        empleado = new Empleado(
+            null,
+            nombreJTextField.getText(),
+            domicilioJTextField.getText(),
+            telefonoJTextField.getText(),
+            emailJTextField.getText(),
+            fecha,
+            generoJComboBox.getItemAt(generoJComboBox.getSelectedIndex())
+            );
         empleadoRepository.agregar(empleado);
     }
 
     private void modificarEmpleado(){
-        if (empleado == null) return; 
-        empleado = dameEmpleado();
-        empleado.setId((Long)(numeroEmpleadoJComboBox.getSelectedItem()));
-        System.out.println(empleado.getId());
+        java.util.Date utilDate = fehcaJDateChooser.getDate();
+        java.sql.Date fecha = new java.sql.Date(utilDate.getTime());
+        empleado.setNombre(nombreJTextField.getText());
+        empleado.setDomicilio(domicilioJTextField.getText());
+        empleado.setTelefono(telefonoJTextField.getText());
+        empleado.setEmail(emailJTextField.getText());
+        empleado.setFechaNacimiento(fecha);
+        empleado.setGenero(generoJComboBox.getItemAt(generoJComboBox.getSelectedIndex()));
         empleadoRepository.modificar(empleado);
+       
     }
 
 
@@ -255,6 +277,7 @@ public class VentanaEmpleados extends JFrame implements ActionListener {
         emailJTextField.setText("");
         fehcaJDateChooser.setDate(null);
         numeroEmpleadoJComboBox.removeAllItems();
+        generoJComboBox.removeAllItems();
     }
 
     
@@ -274,12 +297,19 @@ public class VentanaEmpleados extends JFrame implements ActionListener {
         return empleado;
     }
 
+    private void actualizarCombobox(){
+        limpiarCampos();
+        llenarComboBox();
+        revalidate();
+        repaint();
+    }
+
    
 
     private void llenarComboBox(){
         List<Genero> generos = generoRepository.recuperarTodos();
         for (Genero genero : generos){
-            generoJComboBox.addItem(genero.getNombre());
+            generoJComboBox.addItem(genero);
         }
 
         List<Empleado> empleados = empleadoRepository.recuperarTodos();
@@ -288,6 +318,8 @@ public class VentanaEmpleados extends JFrame implements ActionListener {
         }
 
     }
+
+   
 
     
     
