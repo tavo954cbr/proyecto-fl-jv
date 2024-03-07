@@ -7,6 +7,8 @@ import db.repository.EmpleadoRepository;
 import db.repository.GeneroRepository;
 import models.Empleado;
 import models.Genero;
+import screen.LoginVentana;
+import screen.RegistroVentana;
 import screen.VentanaEmpleados;
 
 public class App {
@@ -17,8 +19,13 @@ public class App {
 
     // GeneroRepository generoRepository = new GeneroRepository();
     // System.out.println(generoRepository.recuperarTodos());
-        VentanaEmpleados ventanaEmpleados = new VentanaEmpleados();
-        ventanaEmpleados.setVisible(true);
+        // VentanaEmpleados ventanaEmpleados = new VentanaEmpleados();
+        // ventanaEmpleados.setVisible(true);
 
+        // RegistroVentana registroVentana = new RegistroVentana();
+        // registroVentana.setVisible(true);
+
+        LoginVentana loginVentana = new LoginVentana(null);
+        loginVentana.setVisible(true);
     }
 }
